@@ -7,6 +7,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from modules.equalizedodds import *
 from modules.loss import ZeroOneLoss
 from modules.riskdifference import *
+from modules.riskratio import *
 
 torch.manual_seed(0)
 random.seed(0)
@@ -71,6 +72,33 @@ def riskdiff_neuralnet(dataloader):
                 print(f'Epoch: {epoch:2d} \tobj: {obj.item():.6f} \tarruracy: {accuracy:.6f} \trd: {score:.6f}')
 
 
+def riskratio_neuralnet(dataloader):
+    net = Net(87, 1)
+    optimizer = optim.Adam(net.parameters(), lr=0.01)
+    risk_criterion = nn.BCEWithLogitsLoss()
+    rr_criterion = LogisticRiskRatio(1.25)
+    lf = 0.26
+
+    zoloss = ZeroOneLoss()
+
+    print(rr_criterion.__class__.__name__)
+    for epoch in range(20):
+        for i_batch, (s, X, y) in enumerate(dataloader):
+            z = net(X)
+            risk = risk_criterion(z, y)
+            rr = rr_criterion(z, s)
+            obj = risk + lf * rr
+
+            optimizer.zero_grad()
+            obj.backward()
+            optimizer.step()
+
+            if (i_batch == 0) & (epoch > 15):
+                accuracy = 1 - zoloss(z, y)
+                score = rr_criterion.get_01score(z, s)
+                print(f'Epoch: {epoch:2d} \tobj: {obj.item():.6f} \tarruracy: {accuracy:.6f} \trd: {score:.6f}')
+
+
 def eqo_neuralnet(dataloader):
     net = Net(87, 1)
     optimizer = optim.Adam(net.parameters(), lr=0.05)
@@ -108,4 +136,5 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(train_set, batch_size=train_size // 10, shuffle=True, num_workers=0)
 
     riskdiff_neuralnet(train_dataloader)
+    riskratio_neuralnet(train_dataloader)
     eqo_neuralnet(train_dataloader)

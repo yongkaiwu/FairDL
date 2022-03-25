@@ -66,8 +66,6 @@ def riskdiff_neuralnet(dataloader):
             optimizer.step()
 
             if (i_batch == 0) & (epoch > 15):
-                a = zoloss(z, y)
-                b = zoloss.get_01score(z, y)
                 accuracy = 1 - zoloss(z, y)
                 score = rd_criterion.get_01score(z, s)
                 print(f'Epoch: {epoch:2d} \tobj: {obj.item():.6f} \tarruracy: {accuracy:.6f} \trd: {score:.6f}')

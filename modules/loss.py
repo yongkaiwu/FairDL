@@ -10,3 +10,8 @@ class ZeroOneLoss(nn.Module):
     def forward(self, z, y):
         y_ = y * 2 - 1
         return torch.mean(self.surrogate(z * y_))
+
+    def get_01score(self, z, y):
+        y_hat = torch.heaviside(z, torch.tensor([0.0]))
+        accuracy = torch.mean(torch.abs(y_hat - y))
+        return accuracy

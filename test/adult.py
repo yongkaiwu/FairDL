@@ -1,6 +1,5 @@
 import random
 
-import numpy as np
 from torch import optim
 from torch.utils.data import Dataset, DataLoader, random_split
 
@@ -11,17 +10,16 @@ from modules.riskratio import *
 
 torch.manual_seed(0)
 random.seed(0)
-np.random.seed(0)
 if torch.cuda.is_available():
     torch.backends.cudnn.deterministic = True
 
 
 class AdultData(Dataset):
     def __init__(self):
-        npz = self.df = np.load('../data/adult-balanced.npz')
-        self.s = torch.from_numpy(npz['s'])
-        self.x = torch.from_numpy(npz['x'])
-        self.y = torch.from_numpy(npz['y'])
+        sxy = torch.load('../data/adult-balanced.pth')
+        self.s = sxy['s']
+        self.x = sxy['x']
+        self.y = sxy['y']
 
     def __len__(self):
         return len(self.x)

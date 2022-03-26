@@ -15,11 +15,7 @@ setup(
     url='',
     include_package_data=True,
     install_requires=[
-        'numpy>=1.17.1',
-        'torch>=1.2.0',
-        'scipy>=1.3.1',
-        'torchvision>=0.4.0',
-        'scikit_learn>=0.22.1'
+        'torch>=1.10.0'
     ],
     keywords=['python', 'fairness', 'deep learning', 'pytorch', 'ai', 'ethics'],
     classifiers=[
